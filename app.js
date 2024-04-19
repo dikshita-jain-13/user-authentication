@@ -13,6 +13,11 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 app.use('/user', userRoutes)
+app.get('/' , (req ,res)=>{
+    return res.status(200).json(
+        "Hi from Dimjayyy" 
+    )
+})
 mongoose.set('strictQuery', false)
 
 

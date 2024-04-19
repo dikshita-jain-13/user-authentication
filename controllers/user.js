@@ -7,7 +7,7 @@ import validator from 'validator'
 import nodemailer from "nodemailer"
 import otpGenerator from 'otp-generator'
 
-
+//to get all the users
 export const getAllUsers = async (req, res) => {
     try {
         const result = await User.find()
@@ -17,15 +17,6 @@ export const getAllUsers = async (req, res) => {
         res.status(404).json({ message: 'error in getAllUsers - controllers/user.js', error, success: false })
     }
 }
-
-
-
-
-
-
-
-
-
 
 export const sendRegisterOTP = async (req, res) => {
     try {
@@ -40,25 +31,36 @@ export const sendRegisterOTP = async (req, res) => {
 
 
         const otp = otpGenerator.generate(6, { digits: true, lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false })
+        console.log(otp)
         const hashedOTP = await bcrypt.hash(otp, 12)
         const newOTP = await OTP.create({ email, otp: hashedOTP, name: 'register_otp' })
 
-        var transporter = nodemailer.createTransport({
-            service: 'Gmail',
+        // var transporter = nodemailer.createTransport({
+        //     service: 'Gmail',
+        //     auth: {
+        //         user: process.env.SENDER_EMAIL,
+        //         pass: process.env.SENDER_EMAIL_PASSWORD
+        //     }
+        // });
+        var transport = nodemailer.createTransport({
+            host: "sandbox.smtp.mailtrap.io",
+            port: 465,
             auth: {
-                user: process.env.SENDER_EMAIL,
-                pass: process.env.SENDER_EMAIL_PASSWORD
+              user: "80a0d4f3681a30",
+              pass: "275ccec34cf706"
             }
-        });
+          });
+          
         const mailOptions = {
-            from: process.env.SENDER_EMAIL,
+            from: donaldtrump,
             to: email,
             subject: 'Verification',
             html: `<p>Your OTP code is ${otp}</p>`
         };
         transporter.sendMail(mailOptions, function (err, info) {
             if (err) console.log(err)
-            else return null        //console.log(info);
+            else return null        
+        console.log(info);
         });
 
         res.status(200).json({ result: newOTP, message: 'register_otp send successfully', success: true })
@@ -67,19 +69,6 @@ export const sendRegisterOTP = async (req, res) => {
         res.status(404).json({ message: 'error in sendRegisterOTP - controllers/user.js', error, success: false })
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const register = async (req, res) => {
     try {
@@ -124,19 +113,6 @@ export const register = async (req, res) => {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const login = async (req, res) => {
     try {
         const auth_token = 'auth_token'
@@ -169,20 +145,6 @@ export const login = async (req, res) => {
         res.status(404).json({ message: 'login failed - controllers/user.js', error, success: false })
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export const sendForgetPasswordOTP = async (req, res) => {
     try {
@@ -227,18 +189,6 @@ export const sendForgetPasswordOTP = async (req, res) => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 export const changePassword = async (req, res) => {
     try {
 
@@ -281,20 +231,6 @@ export const changePassword = async (req, res) => {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const deleteAllUsers = async (req, res) => {
     try {
 
@@ -306,5 +242,3 @@ export const deleteAllUsers = async (req, res) => {
         res.status(404).json({ message: 'error in deleteAllUsers - controllers/user.js', success: false })
     }
 }
-
-
